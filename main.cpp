@@ -8,6 +8,9 @@
 #include <array>
 
 
+int width = 0;
+int height = 0;
+
 void addPath(Cell arr[][10], std::stack<Cell*> &stackRef, std::default_random_engine &engine) {
     Cell* currentCellPtr = stackRef.top();
     stackRef.pop();
@@ -33,7 +36,7 @@ void addPath(Cell arr[][10], std::stack<Cell*> &stackRef, std::default_random_en
                 }
 
             case 'S':
-                if (currentCellPtr->y < 9) {
+                if (currentCellPtr->y < height - 1) {
                     if (!arr[currentCellPtr->y + 1][currentCellPtr->x].visited) {
                         stackRef.push(currentCellPtr);
                         currentCellPtr->southWall = false;
@@ -46,7 +49,7 @@ void addPath(Cell arr[][10], std::stack<Cell*> &stackRef, std::default_random_en
                 }
 
             case 'E':
-                if (currentCellPtr->x < 9) {
+                if (currentCellPtr->x < width - 1) {
                     if (!arr[currentCellPtr->y][currentCellPtr->x + 1].visited) {
                         stackRef.push(currentCellPtr);
                         currentCellPtr->eastWall = false;
@@ -76,15 +79,15 @@ void addPath(Cell arr[][10], std::stack<Cell*> &stackRef, std::default_random_en
 
 void printMaze(Cell arr[][10]) {
     std::string roof = " ";
-    for (int i = 0; i < 10 * 2 - 1; i++) {
+    for (int i = 0; i < width * 2 - 1; i++) {
         roof += "_";
     }
     std::cout << roof << std::endl;
 
     std::string rowString;
-    for (int row = 0; row < 10; row++) {
+    for (int row = 0; row < height; row++) {
         rowString += "|";
-        for (int col = 0; col < 10; col++) {
+        for (int col = 0; col < width; col++) {
             arr[row][col].southWall ? rowString += "_" : rowString += " ";
             if (arr[row][col].eastWall) {
                 rowString += "|";
@@ -99,9 +102,15 @@ void printMaze(Cell arr[][10]) {
 }
 
 int main() {
-    Cell cellGrid[10][10];
-    for (int row = 0; row < 10; row++) {
-        for (int col = 0; col < 10; col++) {
+    std::cout << "How wide is the maze? " << std::flush;
+    std::cin >> width;
+    std::cout << "How tall is the maze? " << std::flush;
+    std::cin >> height;
+
+    //initialize containers
+    Cell cellGrid[height][10];
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
             cellGrid[row][col].x = col;
             cellGrid[row][col].y = row;
         }
@@ -111,9 +120,11 @@ int main() {
     cellPtrStack.push(&cellGrid[0][0]); //starter cell
     cellGrid[0][0].visited = true;
 
+    //initialize random number engine
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine engine(seed);
 
+    //run backtracking algorithm
     while (!cellPtrStack.empty()) {
         addPath(cellGrid, cellPtrStack, engine);
     }
