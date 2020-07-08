@@ -2,10 +2,12 @@
 #define MAZE_CELL_H
 
 
+#include <stack>
+#include <random>
+
+
 class Cell {
 public:
-    Cell();
-
     bool visited;
     bool northWall;
     bool southWall;
@@ -14,6 +16,11 @@ public:
 
     int x;
     int y;
+
+    Cell();
+    void addPath(Cell arr[][10], std::stack<Cell*> &stackRef, std::default_random_engine &engine);
+    void printMaze(Cell arr[][10]);
+    void run();
 };
 
 
