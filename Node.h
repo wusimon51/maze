@@ -7,9 +7,10 @@ public:
     int x;
     int y;
 
-    Node(int col, int row);
+    bool southWall;
+    bool eastWall;
 
-private:
+    Node(int col, int row);
 };
 
 

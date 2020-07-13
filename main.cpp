@@ -72,4 +72,47 @@ int main() {
         }
     }
 
+    //maze printing
+    for (auto edge : usedEdges) {
+        if (edge[0]->x == edge[1]->x) {
+            if (edge[0]->y > edge[1]->y) {
+                edge[1]->southWall = false;
+            } else {
+                edge[0]->southWall = false;
+            }
+        } else {
+            if (edge[0]->x > edge[1]->x) {
+                edge[1]->eastWall = false;
+            } else {
+                edge[0]->eastWall = false;
+            }
+        }
+    }
+
+    std::string roof = " ";
+    for (int i = 0; i < width * 2 - 1; i++) {
+        roof += "_";
+    }
+    std::cout << roof << std::endl;
+
+    std::string rowString;
+    for (int row = 0; row < height; row++) {
+        rowString += "|";
+        for (int col = 0; col < width; col++) {
+            if (nodeGrid[row][col].southWall) {
+                rowString += "_";
+            } else rowString += " ";
+
+            if (nodeGrid[row][col].eastWall) {
+                rowString += "|";
+            } else {
+                if (nodeGrid[row][col].southWall && nodeGrid[row][col + 1].southWall) {
+                    rowString += "_";
+                } else rowString += " ";
+            }
+        }
+
+        std::cout << rowString << std::endl;
+        rowString = "";
+    }
 }
