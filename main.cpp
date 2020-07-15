@@ -6,15 +6,7 @@
 
 #include "Node.h"
 
-
-int main() {
-    int width, height;
-    std::cout << "How wide is the maze? " << std::flush;
-    std::cin >> width;
-    std::cout << "How tall is the maze? " << std::flush;
-    std::cin >> height;
-
-    std::vector<std::vector<Node>> nodeGrid(width * height);
+void generateMaze(int &width, int &height, std::vector<std::vector<Node>> &nodeGrid) {
     std::vector<std::vector<Node*>> edges;
     std::vector<std::vector<Node*>> usedEdges;
     std::vector<std::vector<Node*>> forest;
@@ -115,4 +107,15 @@ int main() {
         std::cout << rowString << std::endl;
         rowString = "";
     }
+}
+
+int main() {
+    int width, height;
+    std::cout << "How wide is the maze? " << std::flush;
+    std::cin >> width;
+    std::cout << "How tall is the maze? " << std::flush;
+    std::cin >> height;
+
+    std::vector<std::vector<Node>> nodeGrid(width * height);
+    generateMaze(width, height, nodeGrid);
 }
