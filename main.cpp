@@ -3,6 +3,7 @@
 #include <random>
 #include <chrono>
 #include <algorithm>
+#include <stack>
 
 #include "Node.h"
 
@@ -119,4 +120,6 @@ int main() {
 
     std::vector<std::vector<Node>> nodeGrid(width * height);
     generateMaze(width, height, nodeGrid);
+
+    std::stack<Node*> stack;
 }
