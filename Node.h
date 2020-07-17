@@ -9,6 +9,7 @@ public:
 
     bool southWall;
     bool eastWall;
+    bool path;
 
     Node(int col, int row);
 };
