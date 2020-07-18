@@ -8,7 +8,6 @@
 #include "Node.h"
 
 
-int
 void generateMaze(int &width, int &height, std::vector<std::vector<Node>> &nodeGrid) {
     std::vector<std::vector<Node*>> edges;
     std::vector<std::vector<Node*>> usedEdges;
