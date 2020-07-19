@@ -81,33 +81,6 @@ void generateMaze(int &width, int &height, std::vector<std::vector<Node>> &nodeG
             }
         }
     }
-
-    std::string roof = " ";
-    for (int i = 0; i < width * 2 - 1; i++) {
-        roof += "_";
-    }
-    std::cout << roof << std::endl;
-
-    std::string rowString;
-    for (int row = 0; row < height; row++) {
-        rowString += "|";
-        for (int col = 0; col < width; col++) {
-            if (nodeGrid[row][col].southWall) {
-                rowString += "_";
-            } else rowString += " ";
-
-            if (nodeGrid[row][col].eastWall) {
-                rowString += "|";
-            } else {
-                if (nodeGrid[row][col].southWall && nodeGrid[row][col + 1].southWall) {
-                    rowString += "_";
-                } else rowString += " ";
-            }
-        }
-
-        std::cout << rowString << std::endl;
-        rowString = "";
-    }
 }
 
 int main() {
@@ -139,10 +112,14 @@ int main() {
         }
 
         std::vector<Node*> neighbors;
-        if (currentNodePtr->y > 0 && !nodeGrid[currentNodePtr->y - 1][currentNodePtr->x].southWall) neighbors.push_back(&nodeGrid[currentNodePtr->y - 1][currentNodePtr->x]);
-        if (currentNodePtr->y < height - 1 && !nodeGrid[currentNodePtr->y][currentNodePtr->x].southWall) neighbors.push_back(&nodeGrid[currentNodePtr->y + 1][currentNodePtr->x]);
-        if (currentNodePtr->x > 0 && !nodeGrid[currentNodePtr->y][currentNodePtr->x - 1].eastWall) neighbors.push_back(&nodeGrid[currentNodePtr->y][currentNodePtr->x - 1]);
-        if (currentNodePtr->x < width - 1 && !nodeGrid[currentNodePtr->y][currentNodePtr->x].eastWall) neighbors.push_back(&nodeGrid[currentNodePtr->y][currentNodePtr->x + 1]);
+        if (currentNodePtr->y > 0 && !nodeGrid[currentNodePtr->y - 1][currentNodePtr->x].southWall)
+            neighbors.push_back(&nodeGrid[currentNodePtr->y - 1][currentNodePtr->x]);
+        if (currentNodePtr->y < height - 1 && !nodeGrid[currentNodePtr->y][currentNodePtr->x].southWall)
+            neighbors.push_back(&nodeGrid[currentNodePtr->y + 1][currentNodePtr->x]);
+        if (currentNodePtr->x > 0 && !nodeGrid[currentNodePtr->y][currentNodePtr->x - 1].eastWall)
+            neighbors.push_back(&nodeGrid[currentNodePtr->y][currentNodePtr->x - 1]);
+        if (currentNodePtr->x < width - 1 && !nodeGrid[currentNodePtr->y][currentNodePtr->x].eastWall)
+            neighbors.push_back(&nodeGrid[currentNodePtr->y][currentNodePtr->x + 1]);
 
         if (std::find(neighbors.begin(), neighbors.end(), &nodeGrid[height - 1][width - 1]) != neighbors.end()) {
             (*std::find(neighbors.begin(), neighbors.end(), &nodeGrid[height - 1][width - 1]))->parent = currentNodePtr;
@@ -171,12 +148,57 @@ int main() {
     }
 
     Node* current = &nodeGrid[height - 1][width - 1];
+    std::vector<Node*> path;
     while (true) {
         if (current == &nodeGrid[0][1] || current == &nodeGrid[1][0]) {
-            std::cout << current->x << current->y << " " << 0 << 0 << std::endl;
+            path.push_back(current);
+            path.push_back(&nodeGrid[0][0]);
             break;
         }
-        std::cout << current->x << current->y << " " << std::flush;
+        path.push_back(current);
         current = current->parent;
+    }
+
+    std::vector<std::string> mazeRows;
+
+    std::string roof;
+    for (int i = 0; i < width; i++) {
+        roof += "+---";
+    }
+    roof += "+";
+    mazeRows.push_back(roof);
+
+    std::string topString;
+    std::string bottomString;
+    for (int row = 0; row < height; row++) {
+        topString += "|";
+        bottomString += "+";
+
+        for (int col = 0; col < width; col++) {
+            if (nodeGrid[row][col].eastWall) {
+                topString += "   |";
+            } else {
+                topString += "    ";
+            }
+
+            if (nodeGrid[row][col].southWall) {
+                bottomString += "---+";
+            } else {
+                bottomString += "   +";
+            }
+        }
+
+        mazeRows.push_back(topString);
+        mazeRows.push_back(bottomString);
+        topString = "";
+        bottomString = "";
+    }
+
+    for (Node* node : path) {
+        mazeRows[2 * node->y + 1].replace(node->x * 4 + 2, 1, "*");
+    }
+
+    for (const std::string& row : mazeRows) {
+        std::cout << row << std::endl;
     }
 }
