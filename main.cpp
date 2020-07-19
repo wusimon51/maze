@@ -3,7 +3,6 @@
 #include <random>
 #include <chrono>
 #include <algorithm>
-#include <stack>
 
 #include "Node.h"
 
@@ -121,5 +120,63 @@ int main() {
     std::vector<std::vector<Node>> nodeGrid(width * height);
     generateMaze(width, height, nodeGrid);
 
-    std::stack<Node*> stack;
+    std::vector<Node*> open;
+    std::vector<Node*> closed;
+    open.push_back(&nodeGrid[0][0]);
+
+    while (!open.empty()) {
+        Node* currentNodePtr = open[0];
+        for (auto node : open) {
+            if (node->fScore < currentNodePtr->fScore) {
+                currentNodePtr = node;
+            }
+        }
+
+        for (int i = 0; i < open.size(); i++) {
+            if (open[i] == currentNodePtr) {
+                open.erase(open.begin() + i);
+            }
+        }
+
+        std::vector<Node*> neighbors;
+        if (currentNodePtr->y > 0 && !nodeGrid[currentNodePtr->y - 1][currentNodePtr->x].southWall) neighbors.push_back(&nodeGrid[currentNodePtr->y - 1][currentNodePtr->x]);
+        if (currentNodePtr->y < height - 1 && !nodeGrid[currentNodePtr->y][currentNodePtr->x].southWall) neighbors.push_back(&nodeGrid[currentNodePtr->y + 1][currentNodePtr->x]);
+        if (currentNodePtr->x > 0 && !nodeGrid[currentNodePtr->y][currentNodePtr->x - 1].eastWall) neighbors.push_back(&nodeGrid[currentNodePtr->y][currentNodePtr->x - 1]);
+        if (currentNodePtr->x < width - 1 && !nodeGrid[currentNodePtr->y][currentNodePtr->x].eastWall) neighbors.push_back(&nodeGrid[currentNodePtr->y][currentNodePtr->x + 1]);
+
+        if (std::find(neighbors.begin(), neighbors.end(), &nodeGrid[height - 1][width - 1]) != neighbors.end()) {
+            (*std::find(neighbors.begin(), neighbors.end(), &nodeGrid[height - 1][width - 1]))->parent = currentNodePtr;
+            break;
+        }
+
+        for (Node* neighbor : neighbors) {
+            if (currentNodePtr->parent != neighbor) neighbor->parent = currentNodePtr;
+
+            int g = currentNodePtr->x + currentNodePtr->y + 1;
+            int h = (width - 1 - neighbor->x) + (height - 1 - neighbor->y);
+            neighbor->fScore = g + h;
+
+            auto openIt = std::find(open.begin(), open.end(), neighbor);
+            if (openIt != open.end() && (*openIt)->fScore < neighbor->fScore) {
+                continue;
+            }
+
+            auto closedIt = std::find(closed.begin(), closed.end(), neighbor);
+            if (closedIt != closed.end() && (*closedIt)->fScore < neighbor->fScore) {
+                continue;
+            } else open.push_back(neighbor);
+        }
+
+        closed.push_back(currentNodePtr);
+    }
+
+    Node* current = &nodeGrid[height - 1][width - 1];
+    while (true) {
+        if (current == &nodeGrid[0][1] || current == &nodeGrid[1][0]) {
+            std::cout << current->x << current->y << " " << 0 << 0 << std::endl;
+            break;
+        }
+        std::cout << current->x << current->y << " " << std::flush;
+        current = current->parent;
+    }
 }

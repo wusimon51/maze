@@ -6,10 +6,12 @@ class Node {
 public:
     int x;
     int y;
+    int fScore;
 
     bool southWall;
     bool eastWall;
-    bool path;
+
+    Node* parent;
 
     Node(int col, int row);
 };
